@@ -4,6 +4,7 @@
 
 #include <stack>
 #include <limits>
+#include <SDL_system.h>
 #include "rer_tree.h"
 
 
@@ -78,4 +79,28 @@ rer_node *rer_tree::findNearest(Point pos, std::vector<Rectangle> *rects) {
     }
 
     return nearest;
+}
+
+void drawTree(SDL_Renderer *renderer, rer_tree &tree) {
+    rer_node *current;
+    rer_node *root = tree.root;
+    std::stack<rer_node *> stack;
+    for (auto node:root->children) {
+        stack.push(node);
+    }
+
+    while (!stack.empty()) {
+        current = stack.top();
+        stack.pop();
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        if(current->colored){
+            SDL_SetRenderDrawColor(renderer, current->r, current->g, current->b,current->a);
+        }
+        if (current->children.size() > 0) {
+            for (auto child:current->children) {
+                SDL_RenderDrawLine(renderer, current->pos.x, current->pos.y, child->pos.x, child->pos.y);
+                stack.push(child);
+            }
+        }
+    }
 }

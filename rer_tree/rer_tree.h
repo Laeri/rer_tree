@@ -18,5 +18,6 @@ public:
     ~rer_tree();
 };
 
+void drawTree(SDL_Renderer *renderer, rer_tree &tree);
 
 #endif //RER_TREE_RER_TREE_H
