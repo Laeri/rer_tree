@@ -39,8 +39,11 @@ int main() {
     while (!quit) {
         while (SDL_PollEvent(&e)) {
             switch (e.type) {
+                case SDL_QUIT:
+                    quit = true;
+                    break;
                 case SDL_KEYDOWN:
-                    if (e.type == SDL_QUIT || (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)) {
+                    if ((e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)) {
                         quit = true;
                     } else if (e.key.keysym.sym == SDLK_RCTRL || e.key.keysym.sym == SDLK_LCTRL) {
                         ctrl_down = true;
