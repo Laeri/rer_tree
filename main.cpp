@@ -101,14 +101,15 @@ int main() {
                 sample.x = std::rand() % SCREEN_WIDTH;
                 sample.y = std::rand() % SCREEN_HEIGHT;
                 for (auto rect: rects) {
-                    if (sample.x > rect.min.x && sample.x < rect.max.x && sample.y > rect.min.y && sample.y < rect.max.y) {
+                    if (sample.x > rect.min.x && sample.x < rect.max.x && sample.y > rect.min.y &&
+                        sample.y < rect.max.y) {
                         sample_found = false;
                     }
                 }
             }
             float dx = sample.x;
             float dy = sample.y;
-            rer_node *node = tree.findNearest(Point(dx,dy), &rects);
+            rer_node *node = tree.findNearest(Point(dx, dy), &rects);
             if (node) {
                 if (!direct_line) {
                     float step_size = 10;
@@ -133,35 +134,56 @@ int main() {
                 node->children.push_back(new_node);
 
             }
+        }
 
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
 
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        drawTree(renderer, tree);
 
-            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-            drawTree(renderer, tree);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        if (draw_mouse_rect) {
+            tmp_rect.w = current_mouse.x - rect_begin.x;
+            tmp_rect.h = current_mouse.y - rect_begin.y;
+            tmp_rect.x = rect_begin.x;
+            tmp_rect.y = rect_begin.y;
 
-            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-            if (draw_mouse_rect) {
-                tmp_rect.w = current_mouse.x - rect_begin.x;
-                tmp_rect.h = current_mouse.y - rect_begin.y;
-                tmp_rect.x = rect_begin.x;
-                tmp_rect.y = rect_begin.y;
+            SDL_RenderDrawRect(renderer, &tmp_rect);
+        }
 
-                SDL_RenderDrawRect(renderer, &tmp_rect);
-            }
-
-            if (draw_all_rects) {
-                SDL_Rect sdl_rect;
-                for (auto &rect: rects) {
-                    sdl_rect.x = rect.min.x;
-                    sdl_rect.y = rect.min.y;
-                    sdl_rect.w = rect.max.x - rect.min.x;
-                    sdl_rect.h = rect.max.y - rect.min.y;
-                    SDL_RenderDrawRect(renderer, &sdl_rect);
-                }
+        if (draw_all_rects) {
+            SDL_Rect sdl_rect;
+            for (auto &rect: rects) {
+                sdl_rect.x = rect.min.x;
+                sdl_rect.y = rect.min.y;
+                sdl_rect.w = rect.max.x - rect.min.x;
+                sdl_rect.h = rect.max.y - rect.min.y;
+                SDL_RenderDrawRect(renderer, &sdl_rect);
             }
         }
+
+        if (find_end) {
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+            SDL_Rect sdl_rect;
+            int length = 10;
+            if (start_node) {
+                sdl_rect.x = start_node->pos.x - length;
+                sdl_rect.y = start_node->pos.y - length;
+                sdl_rect.w = 2 * length;
+                sdl_rect.h = 2 * length;
+                SDL_RenderDrawRect(renderer, &sdl_rect);
+            }
+            if (end_node) {
+                sdl_rect.x = end_node->pos.x - length;
+                sdl_rect.y = end_node->pos.y - length;
+                sdl_rect.w = 2 * length;
+                sdl_rect.h = 2 * length;
+                SDL_RenderDrawRect(renderer, &sdl_rect);
+            }
+        }
+
+
         SDL_RenderPresent(renderer);
     }
 
