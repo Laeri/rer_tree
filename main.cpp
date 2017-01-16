@@ -3,6 +3,7 @@
 #include <vector>
 #include "rer_tree/Point.h"
 #include "rer_tree/Rectangle.h"
+#include "rer_tree/rer_tree.h"
 
 
 int main() {
@@ -27,6 +28,10 @@ int main() {
 
     std::vector<Rectangle> rects;
     SDL_Rect tmp_rect;
+
+    rer_tree tree = rer_tree();
+    rer_node *start_node = nullptr;
+    rer_node *end_node = nullptr;
 
     bool quit = false;
     SDL_Event e;
@@ -59,12 +64,16 @@ int main() {
                     current_mouse.y = e.motion.y;
                     break;
                 case SDL_MOUSEBUTTONDOWN:
-                    if (ctrl_down) {
+                    if (!start_node) {
+                        start_node = new rer_node(e.motion.x, e.motion.y);
+                        start_node->parent = tree.root;
+                        tree.root->add_node(start_node);
+                    } else if (!end_node) {
+                        end_node = new rer_node(e.motion.x, e.motion.y);
+                    } else if (ctrl_down) {
                         draw_mouse_rect = true;
-                        int t_x, t_y;
-                        SDL_GetMouseState(&t_x, &t_y);
-                        rect_begin.x = t_x;
-                        rect_begin.y = t_y;
+                        rect_begin.x = e.motion.x;
+                        rect_begin.y = e.motion.y;
                     }
                     break;
                 case SDL_MOUSEBUTTONUP:
