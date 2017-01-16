@@ -1,6 +1,8 @@
 #include <iostream>
 #include <SDL.h>
+#include <vector>
 #include "rer_tree/Point.h"
+#include "rer_tree/Rectangle.h"
 
 
 int main() {
@@ -23,6 +25,7 @@ int main() {
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
+    std::vector<Rectangle> rects;
     SDL_Rect tmp_rect;
 
     bool quit = false;
@@ -31,6 +34,7 @@ int main() {
     Point rect_begin;
     bool ctrl_down = false;
     bool draw_mouse_rect = false;
+    bool draw_all_rects = true;
 
     while (!quit) {
         while (SDL_PollEvent(&e)) {
@@ -61,20 +65,36 @@ int main() {
                     }
                     break;
                 case SDL_MOUSEBUTTONUP:
-                    draw_mouse_rect = false;
+                    if (draw_mouse_rect) {
+                        Rectangle rect = Rectangle(rect_begin, current_mouse);
+                        rects.push_back(rect);
+                        draw_mouse_rect = false;
+                    }
                     break;
             }
         }
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
         if (draw_mouse_rect) {
             tmp_rect.w = current_mouse.x - rect_begin.x;
             tmp_rect.h = current_mouse.y - rect_begin.y;
             tmp_rect.x = rect_begin.x;
             tmp_rect.y = rect_begin.y;
-            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+
             SDL_RenderDrawRect(renderer, &tmp_rect);
+        }
+
+        if (draw_all_rects) {
+            SDL_Rect sdl_rect;
+            for (auto &rect: rects) {
+                sdl_rect.x = rect.min.x;
+                sdl_rect.y = rect.min.y;
+                sdl_rect.w = rect.max.x - rect.min.x;
+                sdl_rect.h = rect.max.y - rect.min.y;
+                SDL_RenderDrawRect(renderer, &sdl_rect);
+            }
         }
 
         SDL_RenderPresent(renderer);
