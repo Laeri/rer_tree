@@ -82,7 +82,7 @@ rer_node *rer_tree::findNearest(Point pos, std::vector<Rectangle> *rects) {
     return nearest;
 }
 
-void drawTree(SDL_Renderer *renderer, rer_tree &tree) {
+void drawTree(SDL_Renderer *renderer, rer_tree &tree, SDL_Color& color) {
     rer_node *current;
     rer_node *root = tree.root;
     std::stack<rer_node *> stack;
@@ -93,7 +93,7 @@ void drawTree(SDL_Renderer *renderer, rer_tree &tree) {
     while (!stack.empty()) {
         current = stack.top();
         stack.pop();
-        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        SDL_SetRenderDrawColor(renderer,color.r, color.g, color.b, color.a);
         if (current->colored) {
             SDL_SetRenderDrawColor(renderer, current->r, current->g, current->b, current->a);
         }

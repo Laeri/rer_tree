@@ -34,15 +34,35 @@ int main() {
     rer_node *start_node = nullptr;
     rer_node *end_node = nullptr;
 
+    // lines of the tree edges will have this color
+    SDL_Color tree_color;
+    tree_color.a = 255;
+    tree_color.r = 0;
+    tree_color.g = 0;
+    tree_color.b = 255;
+
+    SDL_Color rect_color;
+    rect_color.a = 255;
+    rect_color.r = 255;
+    rect_color.g = 255;
+    rect_color.b = 0;
+
     bool quit = false;
     SDL_Event e;
 
     bool started = false;
+    /*if find_end is not set, the tree expands in all directions
+     * without looking for the end point. */
     bool find_end = true;
+    // either increment in new direction or draw a direct line from node to sample
     bool direct_line = false;
+
+    // used for drawing the obstacles (rectangles)
     Point current_mouse;
     Point rect_begin;
     bool ctrl_down = false;
+
+    // toggle visualizing of obstacles (rectangles) and current rectangle drawing
     bool draw_mouse_rect = false;
     bool draw_all_rects = true;
 
@@ -62,7 +82,7 @@ int main() {
                         started = started ? false : true;
                     } else if (e.key.keysym.sym == SDLK_d) {
                         draw_all_rects = draw_all_rects ? false : true;
-                    } else if(e.key.keysym.sym == SDLK_r){
+                    } else if (e.key.keysym.sym == SDLK_r) { // reset everything
                         started = false;
                         delete tree;
                         tree = new rer_tree();
@@ -83,6 +103,7 @@ int main() {
                     current_mouse.y = e.motion.y;
                     break;
                 case SDL_MOUSEBUTTONDOWN:
+                    // when clicking the first two times, the start and end nodes are set
                     if (!start_node) {
                         start_node = new rer_node(e.motion.x, e.motion.y);
                         start_node->parent = tree->root;
@@ -92,10 +113,12 @@ int main() {
                         end_node = new rer_node(e.motion.x, e.motion.y);
                         continue;
                     } else if (ctrl_down) {
+                        // if ctrl is down a new rectangle should be drawn (and created when the mouse is up again
                         draw_mouse_rect = true;
                         rect_begin.x = e.motion.x;
                         rect_begin.y = e.motion.y;
                     } else {
+                        // otherwise when mouse is clicked the tree expands to the new position
                         rer_node *node = tree->findNearest(Point(e.motion.x, e.motion.y), &rects);
                         if (node) {
                             rer_node *new_node = new rer_node(e.motion.x, e.motion.y);
@@ -105,6 +128,7 @@ int main() {
                     }
                     break;
                 case SDL_MOUSEBUTTONUP:
+                    // create a new obstacle
                     if (draw_mouse_rect) {
                         Rectangle rect = Rectangle(rect_begin, current_mouse);
                         rects.push_back(rect);
@@ -117,7 +141,7 @@ int main() {
         if (started) {
 
             if (find_end) {
-                // try to connect directly
+                // try to connect directly, color and stop the simulation
                 rer_node *node = tree->findNearest(end_node->pos, &rects);
                 if (node) {
                     end_node->parent = node;
@@ -135,12 +159,14 @@ int main() {
                 }
             }
 
+            // find a new direction in which the tree should be expanded
             Point sample;
             bool sample_found = false;
             while (!sample_found) {
                 sample_found = true;
                 sample.x = std::rand() % SCREEN_WIDTH;
                 sample.y = std::rand() % SCREEN_HEIGHT;
+                // check whether sample is inside an obstacle (rectangle)
                 for (auto rect: rects) {
                     if (sample.x > rect.min.x && sample.x < rect.max.x && sample.y > rect.min.y &&
                         sample.y < rect.max.y) {
@@ -152,6 +178,7 @@ int main() {
             float dy = sample.y;
             rer_node *node = tree->findNearest(Point(dx, dy), &rects);
             if (node) {
+                // if no direct line should be drawn, the tree is expanded a delta length into the new direction
                 if (!direct_line) {
                     float step_size = 10;
 
@@ -177,14 +204,16 @@ int main() {
             }
         }
 
+        // clear screen with black
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-        drawTree(renderer, *tree);
+        drawTree(renderer, *tree, tree_color);
 
-        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        SDL_SetRenderDrawColor(renderer, rect_color.r, rect_color.g, rect_color.b, rect_color.a);
+
         if (draw_all_rects) {
+            // draw current mouse rectangle
             if (draw_mouse_rect) {
                 tmp_rect.w = current_mouse.x - rect_begin.x;
                 tmp_rect.h = current_mouse.y - rect_begin.y;
@@ -193,7 +222,7 @@ int main() {
 
                 SDL_RenderDrawRect(renderer, &tmp_rect);
             }
-
+            // draw all obstacles
             SDL_Rect sdl_rect;
             for (auto &rect: rects) {
                 sdl_rect.x = rect.min.x;
@@ -204,6 +233,7 @@ int main() {
             }
         }
 
+        // draw box around start and end point
         if (find_end) {
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
             SDL_Rect sdl_rect;
