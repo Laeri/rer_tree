@@ -57,7 +57,9 @@ int main() {
                     } else if (e.key.keysym.sym == SDLK_RCTRL || e.key.keysym.sym == SDLK_LCTRL) {
                         ctrl_down = true;
                     } else if (e.key.keysym.sym == SDLK_s) {
-                        started = true;
+                        started = started ? false : true;
+                    } else if (e.key.keysym.sym == SDLK_d) {
+                        draw_all_rects = draw_all_rects ? false : true;
                     }
                     break;
                 case SDL_KEYUP:
@@ -80,6 +82,13 @@ int main() {
                         draw_mouse_rect = true;
                         rect_begin.x = e.motion.x;
                         rect_begin.y = e.motion.y;
+                    } else {
+                        rer_node *node = tree.findNearest(Point(e.motion.x, e.motion.y), &rects);
+                        if (node) {
+                            rer_node *new_node = new rer_node(e.motion.x, e.motion.y);
+                            new_node->parent = node;
+                            node->add_node(new_node);
+                        }
                     }
                     break;
                 case SDL_MOUSEBUTTONUP:
