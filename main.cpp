@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SDL.h>
 #include <vector>
+#include <numeric>
 #include "rer_tree/Point.h"
 #include "rer_tree/Rectangle.h"
 #include "rer_tree/rer_tree.h"
@@ -45,6 +46,9 @@ int main() {
     bool ctrl_down = false;
     bool draw_mouse_rect = false;
     bool draw_all_rects = true;
+
+    std::vector<int> free_samples(SCREEN_WIDTH * SCREEN_HEIGHT);
+    std::iota(std::begin(free_samples), std::end(free_samples), 0);
 
     while (!quit) {
         while (SDL_PollEvent(&e)) {
@@ -129,8 +133,11 @@ int main() {
             bool sample_found = false;
             while (!sample_found) {
                 sample_found = true;
-                sample.x = std::rand() % SCREEN_WIDTH;
-                sample.y = std::rand() % SCREEN_HEIGHT;
+                int s_index = std::rand() % free_samples.size();
+                int el_index = free_samples[s_index];
+                sample.x = el_index % SCREEN_WIDTH;
+                sample.y = (el_index / SCREEN_WIDTH);
+                free_samples.erase(free_samples.begin() + s_index);
                 for (auto rect: rects) {
                     if (sample.x > rect.min.x && sample.x < rect.max.x && sample.y > rect.min.y &&
                         sample.y < rect.max.y) {
