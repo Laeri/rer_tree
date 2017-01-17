@@ -30,6 +30,7 @@ int main() {
     SDL_Rect tmp_rect;
 
     rer_tree tree = rer_tree();
+    tree.root->parent = nullptr;
     rer_node *start_node = nullptr;
     rer_node *end_node = nullptr;
 
@@ -76,8 +77,10 @@ int main() {
                         start_node = new rer_node(e.motion.x, e.motion.y);
                         start_node->parent = tree.root;
                         tree.root->add_node(start_node);
+                        continue;
                     } else if (!end_node) {
                         end_node = new rer_node(e.motion.x, e.motion.y);
+                        continue;
                     } else if (ctrl_down) {
                         draw_mouse_rect = true;
                         rect_begin.x = e.motion.x;
@@ -102,6 +105,25 @@ int main() {
         }
 
         if (started) {
+
+            if (find_end) {
+                // try to connect directly
+                rer_node *node = tree.findNearest(end_node->pos, &rects);
+                if (node) {
+                    end_node->parent = node;
+                    node->children.push_back(end_node);
+                    started = false;
+                    rer_node *parent = end_node;
+                    while ((parent = parent->parent)) {
+                        parent->r = 255;
+                        parent->g = 0;
+                        parent->b = 0;
+                        parent->a = 255;
+                        parent->colored = true;
+                    }
+                    continue;
+                }
+            }
 
             Point sample;
             bool sample_found = false;
@@ -152,16 +174,16 @@ int main() {
         drawTree(renderer, tree);
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-        if (draw_mouse_rect) {
-            tmp_rect.w = current_mouse.x - rect_begin.x;
-            tmp_rect.h = current_mouse.y - rect_begin.y;
-            tmp_rect.x = rect_begin.x;
-            tmp_rect.y = rect_begin.y;
-
-            SDL_RenderDrawRect(renderer, &tmp_rect);
-        }
-
         if (draw_all_rects) {
+            if (draw_mouse_rect) {
+                tmp_rect.w = current_mouse.x - rect_begin.x;
+                tmp_rect.h = current_mouse.y - rect_begin.y;
+                tmp_rect.x = rect_begin.x;
+                tmp_rect.y = rect_begin.y;
+
+                SDL_RenderDrawRect(renderer, &tmp_rect);
+            }
+
             SDL_Rect sdl_rect;
             for (auto &rect: rects) {
                 sdl_rect.x = rect.min.x;
