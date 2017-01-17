@@ -28,7 +28,7 @@ void rer_node::add_node(rer_node *node) {
 }
 
 rer_node::~rer_node() {
-    for (rer_node *child: children) {
+    for (auto child: children) {
         delete (child);
     }
 }

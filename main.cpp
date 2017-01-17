@@ -30,8 +30,7 @@ int main() {
     std::vector<Rectangle> rects;
     SDL_Rect tmp_rect;
 
-    rer_tree tree = rer_tree();
-    tree.root->parent = nullptr;
+    rer_tree *tree = new rer_tree();
     rer_node *start_node = nullptr;
     rer_node *end_node = nullptr;
 
@@ -47,8 +46,6 @@ int main() {
     bool draw_mouse_rect = false;
     bool draw_all_rects = true;
 
-    std::vector<int> free_samples(SCREEN_WIDTH * SCREEN_HEIGHT);
-    std::iota(std::begin(free_samples), std::end(free_samples), 0);
 
     while (!quit) {
         while (SDL_PollEvent(&e)) {
@@ -65,6 +62,15 @@ int main() {
                         started = started ? false : true;
                     } else if (e.key.keysym.sym == SDLK_d) {
                         draw_all_rects = draw_all_rects ? false : true;
+                    } else if(e.key.keysym.sym == SDLK_r){
+                        started = false;
+                        delete tree;
+                        tree = new rer_tree();
+                        start_node = nullptr;
+                        end_node = nullptr;
+                        ctrl_down = false;
+                        rects.clear();
+                        continue;
                     }
                     break;
                 case SDL_KEYUP:
@@ -79,8 +85,8 @@ int main() {
                 case SDL_MOUSEBUTTONDOWN:
                     if (!start_node) {
                         start_node = new rer_node(e.motion.x, e.motion.y);
-                        start_node->parent = tree.root;
-                        tree.root->add_node(start_node);
+                        start_node->parent = tree->root;
+                        tree->root->add_node(start_node);
                         continue;
                     } else if (!end_node) {
                         end_node = new rer_node(e.motion.x, e.motion.y);
@@ -90,7 +96,7 @@ int main() {
                         rect_begin.x = e.motion.x;
                         rect_begin.y = e.motion.y;
                     } else {
-                        rer_node *node = tree.findNearest(Point(e.motion.x, e.motion.y), &rects);
+                        rer_node *node = tree->findNearest(Point(e.motion.x, e.motion.y), &rects);
                         if (node) {
                             rer_node *new_node = new rer_node(e.motion.x, e.motion.y);
                             new_node->parent = node;
@@ -112,7 +118,7 @@ int main() {
 
             if (find_end) {
                 // try to connect directly
-                rer_node *node = tree.findNearest(end_node->pos, &rects);
+                rer_node *node = tree->findNearest(end_node->pos, &rects);
                 if (node) {
                     end_node->parent = node;
                     node->children.push_back(end_node);
@@ -133,11 +139,8 @@ int main() {
             bool sample_found = false;
             while (!sample_found) {
                 sample_found = true;
-                int s_index = std::rand() % free_samples.size();
-                int el_index = free_samples[s_index];
-                sample.x = el_index % SCREEN_WIDTH;
-                sample.y = (el_index / SCREEN_WIDTH);
-                free_samples.erase(free_samples.begin() + s_index);
+                sample.x = std::rand() % SCREEN_WIDTH;
+                sample.y = std::rand() % SCREEN_HEIGHT;
                 for (auto rect: rects) {
                     if (sample.x > rect.min.x && sample.x < rect.max.x && sample.y > rect.min.y &&
                         sample.y < rect.max.y) {
@@ -147,7 +150,7 @@ int main() {
             }
             float dx = sample.x;
             float dy = sample.y;
-            rer_node *node = tree.findNearest(Point(dx, dy), &rects);
+            rer_node *node = tree->findNearest(Point(dx, dy), &rects);
             if (node) {
                 if (!direct_line) {
                     float step_size = 10;
@@ -178,7 +181,7 @@ int main() {
         SDL_RenderClear(renderer);
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-        drawTree(renderer, tree);
+        drawTree(renderer, *tree);
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
         if (draw_all_rects) {

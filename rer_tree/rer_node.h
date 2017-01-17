@@ -15,7 +15,7 @@ public:
     int r, g, b, a;
     bool colored = false;
     std::vector<rer_node *> children;
-    rer_node *parent;
+    rer_node *parent = nullptr;
 
     rer_node();
 

@@ -5,6 +5,7 @@
 #include <stack>
 #include <limits>
 #include <SDL_system.h>
+#include <iostream>
 #include "rer_tree.h"
 
 
@@ -13,7 +14,7 @@ rer_tree::rer_tree() {
 }
 
 rer_tree::~rer_tree() {
-    delete root;
+        delete root;
 }
 
 
@@ -93,8 +94,8 @@ void drawTree(SDL_Renderer *renderer, rer_tree &tree) {
         current = stack.top();
         stack.pop();
         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-        if(current->colored){
-            SDL_SetRenderDrawColor(renderer, current->r, current->g, current->b,current->a);
+        if (current->colored) {
+            SDL_SetRenderDrawColor(renderer, current->r, current->g, current->b, current->a);
         }
         if (current->children.size() > 0) {
             for (auto child:current->children) {
