@@ -2,7 +2,7 @@
 This is an old project showing how a simple rapidly exploring random tree (RRT)
 can work. This was mainly used to see how a RRT works and to learn a bit of C++.
 
-![Rapidly Exploring Random Tree Demo](examples/example_small_rer_tree.gif)
+![Rapidly Exploring Random Tree Demo](examples/example_simple_rer_tree.gif)
 ![Rapidly Exploring Random Tree Large Demo](examples/example_rer_tree.gif)
 
 
