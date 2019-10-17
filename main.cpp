@@ -18,7 +18,7 @@ int main() {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
     } else {
         //Create window
-        window = SDL_CreateWindow("Gridlight", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
+        window = SDL_CreateWindow("Rapidly Exploring Random Tree", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
                                   SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
         if (window == NULL) {
             printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -50,10 +50,14 @@ int main() {
     bool quit = false;
     SDL_Event e;
 
+    // start expanding the tree
+    // you can start / stop by pressing the 's' key
     bool started = false;
+
     /*if find_end is not set, the tree expands in all directions
-     * without looking for the end point. */
+     * without looking for the end point. (For taking screenshots) */
     bool find_end = true;
+
     // either increment in new direction or draw a direct line from node to sample
     bool direct_line = false;
 
@@ -65,6 +69,9 @@ int main() {
     // toggle visualizing of obstacles (rectangles) and current rectangle drawing
     bool draw_mouse_rect = false;
     bool draw_all_rects = true;
+    // fill rectangles (true) or only draw outlines (false)
+    // toggle by pressing the 'f' key
+    bool fill_rects = true;
 
 
     while (!quit) {
@@ -74,13 +81,14 @@ int main() {
                     quit = true;
                     break;
                 case SDL_KEYDOWN:
-                    if ((e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)) {
+		    // quit
+                    if ((e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) || e.key.keysym.sym == SDLK_q){
                         quit = true;
                     } else if (e.key.keysym.sym == SDLK_RCTRL || e.key.keysym.sym == SDLK_LCTRL) {
                         ctrl_down = true;
-                    } else if (e.key.keysym.sym == SDLK_s) {
+                    } else if (e.key.keysym.sym == SDLK_s) { // start / stop
                         started = started ? false : true;
-                    } else if (e.key.keysym.sym == SDLK_d) {
+                    } else if (e.key.keysym.sym == SDLK_d) { // show or hide rectangles
                         draw_all_rects = draw_all_rects ? false : true;
                     } else if (e.key.keysym.sym == SDLK_r) { // reset everything
                         started = false;
@@ -91,7 +99,9 @@ int main() {
                         ctrl_down = false;
                         rects.clear();
                         continue;
-                    }
+                    } else if (e.key.keysym.sym == SDLK_f) { // fill or draw outlines of rectangles
+			fill_rects = fill_rects ? false: true;
+		    }
                     break;
                 case SDL_KEYUP:
                     if (e.key.keysym.sym == SDLK_RCTRL || e.key.keysym.sym == SDLK_LCTRL) {
@@ -219,8 +229,11 @@ int main() {
                 tmp_rect.h = current_mouse.y - rect_begin.y;
                 tmp_rect.x = rect_begin.x;
                 tmp_rect.y = rect_begin.y;
-
-                SDL_RenderDrawRect(renderer, &tmp_rect);
+		if (fill_rects) {
+		    SDL_RenderFillRect(renderer, &tmp_rect);
+ 		} else {
+                    SDL_RenderDrawRect(renderer, &tmp_rect);
+		}
             }
             // draw all obstacles
             SDL_Rect sdl_rect;
@@ -229,7 +242,11 @@ int main() {
                 sdl_rect.y = rect.min.y;
                 sdl_rect.w = rect.max.x - rect.min.x;
                 sdl_rect.h = rect.max.y - rect.min.y;
-                SDL_RenderDrawRect(renderer, &sdl_rect);
+		if (fill_rects){
+		    SDL_RenderFillRect(renderer, &sdl_rect);
+		} else {
+                    SDL_RenderDrawRect(renderer, &sdl_rect);
+		}
             }
         }
 
