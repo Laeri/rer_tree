@@ -2,7 +2,10 @@
 This is an old project showing how a simple rapidly exploring random tree (RRT)
 can work. This was mainly used to see how a RRT works and to learn a bit of C++.
 
+
 ![Rapidly Exploring Random Tree Demo](examples/example_simple_rer_tree.gif)
+
+
 ![Rapidly Exploring Random Tree Large Demo](examples/example_rer_tree.gif)
 
 
@@ -11,25 +14,41 @@ in an n-dimensional space (not just 2d or 3d). We explore the space by picking
 random points / configurations and try to connect them to the tree. The tree grows
 this way until the end point is found. We can then traverse the tree from the root to
 the end point. I came first upon this topic when reading this 
-![blog post](http://the-witness.net/news/2012/12/mapping-the-islands-walkable-surfaces/).
-by Casey Muratori for ![the witness](http://the-witness.net/).
+[blog post](http://the-witness.net/news/2012/12/mapping-the-islands-walkable-surfaces/).
+by Casey Muratori for [the witness](http://the-witness.net/).
 
 ## Getting Started
 
 ### Prerequisites
-You need the ![sdl2](https://www.libsdl.org/download-2.0.php) graphics library and 
-![cmake](https://cmake.org/) to build it.
+You need the [sdl2](https://www.libsdl.org/download-2.0.php) graphics library and 
+[cmake](https://cmake.org/) to build it.
+
+On an arch based OS you can get the sdl2 library with:
+
+`sudo pacman -Sy sdl2`.
+
+On ubuntu it would probably be the library libsdl2 or libsdl2-dev.
+
+`sudo apt-get install libsdl2`
 
 ### Installing
+
 * clone or download the repo
+
 `git clone git@github.com:Laeri/rer_tree.git`
+
 * enter the folder and build it with cmake and make
+
 `cmake .`
+
 `make`
+
 * run the binary in the bin folder
+
 `bin/rer_tree`
 
 ## Usage
+
 ### Keybindings
 <kbd>s</kbd> - starts or stops the tree expansion
 
