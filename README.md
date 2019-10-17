@@ -52,7 +52,7 @@ On ubuntu it would probably be the library libsdl2 or libsdl2-dev.
 ## Usage
 1. First <kbd>left mouse</kbd> click sets the starting point of the tree.
 2. Second click sets the endpoint.
-3. Then hold <kbd>ctrl</kbd> down and draw some obstacles.
+3. Then hold <kbd>ctrl</kbd> down and draw some obstacles with the mouse.
 4. Start the expansion by clicking <kbd>s</kbd>.
 5. Reset with <kbd>r</kbd>
 
@@ -74,3 +74,10 @@ On ubuntu it would probably be the library libsdl2 or libsdl2-dev.
 
 <kbd>Escape</kbd> or <kbd>q</kbd> - quit
 
+You can freeze the expansion with <kbd>s</kbd> and raw some new obstacles if the tree makes
+too much progress or help it along by clicking with the mouse which instantly adds new points
+to the tree.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file
+for details.

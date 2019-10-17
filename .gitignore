@@ -1,4 +1,4 @@
-bin/
+bin/*
 cmake-build-debug/
 Makefile
 CMakeFiles/
