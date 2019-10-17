@@ -31,36 +31,43 @@ On ubuntu it would probably be the library libsdl2 or libsdl2-dev.
 
 `sudo apt-get install libsdl2`
 
+`sudo apt-get install libsdl2-dev`
+
 ### Installing
 
-* clone or download the repo
+1. clone or download the repo
 
 `git clone git@github.com:Laeri/rer_tree.git`
 
-* enter the folder and build it with cmake and make
+2. enter the folder and build it with cmake and make
 
 `cmake .`
 
 `make`
 
-* run the binary in the bin folder
+3. run the binary in the bin folder
 
 `bin/rer_tree`
 
 ## Usage
+1. First <kbd>left mouse</kbd> click sets the starting point of the tree.
+2. Second click sets the endpoint.
+3. Then hold <kbd>ctrl</kbd> down and draw some obstacles.
+4. Start the expansion by clicking <kbd>s</kbd>.
+5. Reset with <kbd>r</kbd>
 
 ### Keybindings
 <kbd>s</kbd> - starts or stops the tree expansion
 
 <kbd>d</kbd> - set unset rect drawing (main purpose was to create images from the tree
-    without having the rectangles there
+    without having the rectangles there).
 
 <kbd>f</kbd> - toggle fill rectangles or draw outlines
 
 <kdb>r</kbd> - reset everything
 
 <kbd>left mouse</kbd> - click twice for setting start and end point
-             while the tree is expanding you can manually "help" it a bit if you want to.
+             while the tree is expanding you can manually "help" it a bit if you want to which creates new tree points.
 
 <kbd>ctrl<kbd> - while pressing the control key you can start drawing
        new rectangles. These rectangles represent obstacles
